@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct sleeplock;
 struct stat;
+struct processInfo;
 struct superblock;
 
 // bio.c
