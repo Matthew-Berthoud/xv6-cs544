@@ -7,6 +7,18 @@
 #include "mmu.h"
 #include "proc.h"
 
+int sys_hello(void)
+{
+    cprintf("Hello\n");
+    return 0;
+}
+
+int sys_helloYou(const char *name)
+{
+    cprintf("Hello %s\n", name);
+    return 0;
+}
+
 int
 sys_fork(void)
 {
