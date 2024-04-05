@@ -7,18 +7,6 @@
 #include "mmu.h"
 #include "proc.h"
 
-int sys_hello(void)
-{
-    cprintf("Hello\n");
-    return 0;
-}
-
-int sys_helloYou(const char *name)
-{
-    cprintf("Hello %s\n", name);
-    return 0;
-}
-
 int
 sys_fork(void)
 {
@@ -101,3 +89,24 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int sys_hello(void)
+{
+    begin_op();
+    cprintf("Hello\n");
+    end_op();
+    return 0;
+}
+
+int sys_helloYou(void)
+{
+    char *name;
+
+    begin_op();
+    if(argstr(0, &name) < 0)
+      return -1;
+    cprintf("Hello %s\n", name);
+    begin_op();
+    return 0;
+}
+
