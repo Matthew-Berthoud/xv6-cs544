@@ -27,6 +27,8 @@ int uptime(void);
 // new systems calls for homework 4
 int hello(void);
 int helloYou(const char*);
+int getNumProc(void);
+int getMaxPid(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

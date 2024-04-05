@@ -32,3 +32,5 @@ SYSCALL(uptime)
 
 SYSCALL(hello)
 SYSCALL(helloYou)
+SYSCALL(getNumProc)
+SYSCALL(getMaxPid)

@@ -106,7 +106,22 @@ int sys_helloYou(void)
     if(argstr(0, &name) < 0)
       return -1;
     cprintf("Hello %s\n", name);
-    begin_op();
+    end_op();
     return 0;
 }
 
+int sys_getNumProc(void)
+{
+    begin_op();
+    cprintf("getNumProc\n");
+    end_op();
+    return 0;
+}
+
+int sys_getMaxPid(void)
+{
+    begin_op();
+    cprintf("getMaxPid\n");
+    end_op();
+    return 0;
+}

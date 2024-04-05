@@ -5,8 +5,9 @@
 
 int main(void)
 {
-  hello();
-  helloYou("Matthew");
-  printf(1, "Hello, world!\n");
-  exit();
+    hello();
+    helloYou("Matthew");
+    getNumProc();
+    getMaxPid();
+    exit();
 }
