@@ -1,2 +1,0 @@
-Total Number of Active Processes: 3
-Maximum PID: 5
