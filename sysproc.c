@@ -112,10 +112,7 @@ int sys_helloYou(void)
 
 int sys_getNumProc(void)
 {
-    begin_op();
-    cprintf("getNumProc\n");
-    end_op();
-    return 0;
+    return proccount();
 }
 
 int sys_getMaxPid(void)

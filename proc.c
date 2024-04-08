@@ -532,3 +532,21 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+// Return number of processes in any state besides UNUSED
+int
+proccount(void)
+{
+  int count = 0;
+  struct proc *p;
+
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state == UNUSED)
+      continue;
+    count++;
+  }
+  release(&ptable.lock);
+  return count;
+}

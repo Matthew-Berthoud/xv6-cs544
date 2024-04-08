@@ -5,9 +5,10 @@
 
 int main(void)
 {
-    hello();
-    helloYou("Matthew");
-    getNumProc();
-    getMaxPid();
+    // hello();
+    // helloYou("Matthew");
+    printf(1, "num proc: %d\n", getNumProc());
+    printf(1, "max pid: %d\n", getMaxPid());
+
     exit();
 }
