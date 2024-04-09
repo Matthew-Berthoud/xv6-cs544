@@ -6,6 +6,7 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "processInfo.h"
 
 int
 sys_fork(void)
@@ -92,9 +93,7 @@ sys_uptime(void)
 
 int sys_hello(void)
 {
-    begin_op();
     cprintf("Hello\n");
-    end_op();
     return 0;
 }
 
@@ -102,11 +101,9 @@ int sys_helloYou(void)
 {
     char *name;
 
-    begin_op();
     if(argstr(0, &name) < 0)
       return -1;
     cprintf("Hello %s\n", name);
-    end_op();
     return 0;
 }
 
@@ -122,7 +119,16 @@ int sys_getMaxPid(void)
 
 int sys_getProcInfo(void)
 {
-    return 0;
+    int pid;
+    struct processInfo *procInfo;
+
+    if(argint(0, &pid) < 0)
+      return -1;
+
+    if (argptr(1, (char**) &procInfo, sizeof(struct processInfo)) < 0)
+      return -1;
+
+    return getprocinfo(pid, procInfo);
 }
 
 int sys_setprio(void)

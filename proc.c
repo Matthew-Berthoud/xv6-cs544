@@ -6,7 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-#include "processInfo.h" // homework 4
+#include "processInfo.h"
 
 struct {
   struct spinlock lock;
@@ -112,6 +112,7 @@ found:
   p->context = (struct context*)sp;
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
+  p->times_scheduled = 0; // homework 4
 
   return p;
 }
@@ -343,6 +344,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->times_scheduled++; // homework 4
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
@@ -570,4 +572,32 @@ maxpid(void)
   release(&ptable.lock);
 
   return max_pid;
+}
+
+// Return pointer to procInfo struct for given process
+int
+getprocinfo(int pid, struct processInfo *procInfo)
+{
+  struct proc *p;
+  int procfound = 0; // false
+
+  // find process with PID pid
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid) {
+      procfound = 1; // true
+      break;
+    }
+  }
+  if (!procfound) {
+    release(&ptable.lock);
+    return -1;
+  }
+
+  // set procInfo fields
+  procInfo->pid = p->pid;
+  procInfo->psize = p->sz;
+  procInfo->numberContextSwitches = p->times_scheduled;
+  release(&ptable.lock);
+  return 0;
 }
