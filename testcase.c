@@ -137,21 +137,21 @@ void delay(int count)
 
 int main(void)
 {
-    // 0
+    printf(0, "\n======== testcase 0 ========\n");
     for(int i=0; i<10; i++)
         hello();
 
-    // 1
+    printf(0, "\n======== testcase 1 ========\n");
     for (int i = 0; i < 10; i++){
         helloYou("Calling from XV6");
         helloYou("Welcome to XV6");
     }
 
-    // 2
+    printf(0, "\n======== testcase 2 ========\n");
     printf(1, "Total Number of Active Processes: %d\n", getNumProc());
     printf(1, "Maximum PID: %d\n", getMaxPid());
 
-    // 3
+    printf(0, "\n======== testcase 3 ========\n");
     // struct processInfo info;
     // int pid;
     // printf(1, "PID\tSIZE\tNumber of Context Switch\n");
@@ -162,17 +162,17 @@ int main(void)
 	//   printf(1, "%d\t%d\t%d\n", info.pid, info.psize, info.numberContextSwitches);
     // }
 
-    // 4
+    printf(0, "\n======== testcase 4 ========\n");
     // for(int i=1; i<10; i++){
     //     setprio(i);
     //     printf(1, "Priority : %d\n", getprio());
     // }
 
-    // 5
+    printf(0, "\n======== testcase 5 ========\n");
     // char *argv = {"test-case", "5"};
     // testcase5_main(2, argv);
 
-    // 6
+    printf(0, "\n======== testcase 6 ========\n");
     // testcase6_main(2, argv);
 
     exit();
