@@ -327,6 +327,7 @@ wait(void)
 void
 scheduler(void)
 {
+  int i, j;
   struct proc *prio_list[NPROC + 1]; // +1 for NULL if all procs runnable
   struct proc *p;
   struct proc *cur;
@@ -342,7 +343,7 @@ scheduler(void)
     acquire(&ptable.lock);
 
     // Empty out prio_list by filling with NULL
-    for (int i = 0; i < NPROC+1; i++) {
+    for (i = 0; i < NPROC+1; i++) {
       prio_list[i] = NULL;
     }
 
@@ -352,20 +353,21 @@ scheduler(void)
         continue;
     
       cur = p;
-      for (int i = 0; i < NPROC+1; i++) {
+      for (i = 0; i < NPROC+1; i++) {
         if (prio_list[i] != NULL && cur->prio <= prio_list[i]->prio)
           continue;
+        j = i;
         while (cur != NULL) {
-          buf = prio_list[i];
-          prio_list[i] = cur;
+          buf = prio_list[j];
+          prio_list[j] = cur;
           cur = buf;
+          j++;
         }
+        break;
       }
-      //prio_list[i] = p;
-      // cprintf("%d: %d\n", i, prio_list[i]->pid);
     }
     
-    for (int i = 0; prio_list[i] != NULL; i++) {
+    for (i = 0; prio_list[i] != NULL; i++) {
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -373,6 +375,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      p->times_scheduled++; // homework 4
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
@@ -397,7 +400,6 @@ sched(void)
 {
   int intena;
   struct proc *p = myproc();
-  p->times_scheduled++; // homework 4
 
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
