@@ -119,3 +119,18 @@ int sys_getMaxPid(void)
 {
     return maxpid();
 }
+
+int sys_getProcInfo(void)
+{
+    return 0;
+}
+
+int sys_setprio(void)
+{
+    return 0;
+}
+
+int sys_getprio(void)
+{
+    return 0;
+}

@@ -1,5 +1,6 @@
 struct stat;
 struct rtcdate;
+struct processInfo; // homework 4
 
 // system calls
 int fork(void);
@@ -29,6 +30,9 @@ int hello(void);
 int helloYou(const char*);
 int getNumProc(void);
 int getMaxPid(void);
+int getProcInfo(int, struct processInfo*);
+int setprio(int);
+int getprio(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
