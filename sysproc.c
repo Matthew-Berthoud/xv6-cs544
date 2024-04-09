@@ -92,7 +92,9 @@ sys_uptime(void)
 
 int sys_hello(void)
 {
+    begin_op();
     cprintf("Hello\n");
+    end_op();
     return 0;
 }
 
@@ -100,9 +102,11 @@ int sys_helloYou(void)
 {
     char *name;
 
+    begin_op();
     if(argstr(0, &name) < 0)
       return -1;
     cprintf("Hello %s\n", name);
+    end_op();
     return 0;
 }
 

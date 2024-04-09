@@ -562,8 +562,7 @@ maxpid(void)
   acquire(&ptable.lock);
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->state == UNUSED)
-      continue;
-    cprintf("pid: %d\n", p->pid);
+      continue; // pid will be 0 for unused
     if(p->pid > max_pid)
       max_pid = p->pid;
   }
