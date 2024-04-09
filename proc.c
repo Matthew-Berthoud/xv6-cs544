@@ -8,6 +8,8 @@
 #include "spinlock.h"
 #include "processInfo.h"
 
+#define NULL ((void*)0)
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -325,48 +327,60 @@ wait(void)
 void
 scheduler(void)
 {
-  int max_prio;
-  struct proc *max_prio_proc;
+  struct proc *prio_list[NPROC + 1]; // +1 for NULL if all procs runnable
   struct proc *p;
+  struct proc *cur;
+  struct proc *buf;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
-    // Get the max weighted process
+    // Start operations using ptable
     acquire(&ptable.lock);
-    max_prio = -1;
-    max_prio_proc = myproc();
+
+    // Empty out prio_list by filling with NULL
+    for (int i = 0; i < NPROC+1; i++) {
+      prio_list[i] = NULL;
+    }
+
+    // Sort runnable processes by priority
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-      if(p->pid == myproc()->pid)
-        continue;
-      if(p->prio > max_prio) {
-        max_prio = p->prio;
-        max_prio_proc = p;
+    
+      cur = p;
+      for (int i = 0; i < NPROC+1; i++) {
+        if (prio_list[i] != NULL && cur->prio <= prio_list[i]->prio)
+          continue;
+        while (cur != NULL) {
+          buf = prio_list[i];
+          prio_list[i] = cur;
+          cur = buf;
+        }
       }
+      //prio_list[i] = p;
+      // cprintf("%d: %d\n", i, prio_list[i]->pid);
     }
-    // Switch to chosen process.  It is the process's job
-    // to release ptable.lock and then reacquire it
-    // before jumping back to us.
+    
+    for (int i = 0; prio_list[i] != NULL; i++) {
+      // Switch to chosen process.  It is the process's job
+      // to release ptable.lock and then reacquire it
+      // before jumping back to us.
+      p = prio_list[i];
+      c->proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
 
-    p = max_prio_proc;
+      swtch(&(c->scheduler), p->context);
+      switchkvm();
 
-    c->proc = p;
-    switchuvm(p);
-    p->state = RUNNING;
-    p->times_scheduled++; // homework 4
-
-    swtch(&(c->scheduler), p->context);
-    switchkvm();
-
-    // Process is done running for now.
-    // It should have changed its p->state before coming back.
-    c->proc = 0;
-
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+      c->proc = 0;
+    }
     release(&ptable.lock);
   }
 }
@@ -383,6 +397,7 @@ sched(void)
 {
   int intena;
   struct proc *p = myproc();
+  p->times_scheduled++; // homework 4
 
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
