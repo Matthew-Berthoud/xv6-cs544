@@ -140,8 +140,8 @@ static int (*syscalls[])(void) = {
 [SYS_getNumProc]    sys_getNumProc,
 [SYS_getMaxPid]     sys_getMaxPid,
 [SYS_getProcInfo]   sys_getProcInfo,
-[SYS_setprio]   sys_setprio,
-[SYS_getprio]   sys_setprio,
+[SYS_setprio]       sys_setprio,
+[SYS_getprio]       sys_getprio,
 };
 
 void

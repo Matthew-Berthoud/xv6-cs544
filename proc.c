@@ -113,6 +113,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
   p->times_scheduled = 0; // homework 4
+  //p->prio = 0;            // homework 4
 
   return p;
 }
@@ -576,7 +577,7 @@ maxpid(void)
 
 // Return pointer to procInfo struct for given process
 int
-getprocinfo(int pid, struct processInfo *procInfo)
+procinfo(int pid, struct processInfo *procInfo)
 {
   struct proc *p;
   int procfound = 0; // false
@@ -600,4 +601,33 @@ getprocinfo(int pid, struct processInfo *procInfo)
   procInfo->numberContextSwitches = p->times_scheduled;
   release(&ptable.lock);
   return 0;
+}
+
+// Set priority of current process to n
+int
+setpriority(int n)
+{
+  struct proc *p;
+
+  acquire(&ptable.lock);
+  p = myproc();
+  p->prio = n;
+  //cprintf("SET: n: %d, p->prio: %d\n", n, p->prio);
+  release(&ptable.lock);
+  return 0;
+}
+
+// Get priority of current process
+int
+getpriority(void)
+{
+  struct proc *p;
+  int n = -1;
+
+  acquire(&ptable.lock);
+  p = myproc();
+  n = p->prio;
+  //cprintf("GET: n: %d, p->prio: %d\n", n, p->prio);
+  release(&ptable.lock);
+  return n;
 }

@@ -107,7 +107,8 @@ int             pipewrite(struct pipe*, char*, int);
 int             cpuid(void);
 void            exit(void);
 int             fork(void);
-int             getprocinfo(int, struct processInfo*); // homework 4
+int             getpriority(void); // homework 4
+int             procinfo(int, struct processInfo*); // homework 4
 int             growproc(int);
 int             kill(int);
 int             maxpid(void); // homework 4
@@ -118,6 +119,7 @@ int             proccount(void); // homework 4
 void            procdump(void);
 void            scheduler(void) __attribute__((noreturn));
 void            sched(void);
+int             setpriority(int); // homework 4
 void            setproc(struct proc*);
 void            sleep(void*, struct spinlock*);
 void            userinit(void);

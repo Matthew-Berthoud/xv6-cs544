@@ -128,15 +128,19 @@ int sys_getProcInfo(void)
     if (argptr(1, (char**) &procInfo, sizeof(struct processInfo)) < 0)
       return -1;
 
-    return getprocinfo(pid, procInfo);
+    return procinfo(pid, procInfo);
 }
 
 int sys_setprio(void)
 {
-    return 0;
+    int n;
+    if(argint(0, &n) < 0)
+      return -1;
+
+    return setpriority(n);
 }
 
 int sys_getprio(void)
 {
-    return 0;
+    return getpriority();
 }
