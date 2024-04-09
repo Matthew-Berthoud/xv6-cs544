@@ -550,3 +550,24 @@ proccount(void)
   release(&ptable.lock);
   return count;
 }
+
+
+// Return the maximum PID in the process table
+int
+maxpid(void)
+{
+  struct proc *p;
+  int max_pid = -1;
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->state == UNUSED)
+      continue;
+    cprintf("pid: %d\n", p->pid);
+    if(p->pid > max_pid)
+      max_pid = p->pid;
+  }
+  release(&ptable.lock);
+
+  return max_pid;
+}

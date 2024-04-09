@@ -5,8 +5,8 @@
 
 int main(void)
 {
-    // hello();
-    // helloYou("Matthew");
+    hello();
+    helloYou("Matthew");
     printf(1, "num proc: %d\n", getNumProc());
     printf(1, "max pid: %d\n", getMaxPid());
 
