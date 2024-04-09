@@ -376,12 +376,12 @@ scheduler(void)
       c->proc = p;
 
       // Schedule the same process `prio` times
-      for (j = -1; j < p->prio; j++) {
+      for (j = -1; j < p->prio && p->state == RUNNABLE; j++) {
         switchuvm(p);
         p->state = RUNNING;
         p->times_scheduled++; // homework 4
 
-        cprintf("%d running, %d prio\n", p->pid, p->prio);
+        //cprintf("%d running, %d prio\n", p->pid, p->prio);
 
         swtch(&(c->scheduler), p->context);
         switchkvm();
