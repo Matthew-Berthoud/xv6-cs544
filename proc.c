@@ -374,15 +374,18 @@ scheduler(void)
       // before jumping back to us.
       p = prio_list[i];
       c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      p->times_scheduled++; // homework 4
 
-      cprintf("%d running, %d prio\n", p->pid, p->prio);
+      // Schedule the same process `prio` times
+      for (j = -1; j < p->prio; j++) {
+        switchuvm(p);
+        p->state = RUNNING;
+        p->times_scheduled++; // homework 4
 
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
+        cprintf("%d running, %d prio\n", p->pid, p->prio);
 
+        swtch(&(c->scheduler), p->context);
+        switchkvm();
+      }
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
