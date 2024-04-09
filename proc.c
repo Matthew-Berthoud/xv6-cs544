@@ -357,6 +357,7 @@ scheduler(void)
         if (prio_list[i] != NULL && cur->prio <= prio_list[i]->prio)
           continue;
         j = i;
+        // Sorted insert into array
         while (cur != NULL) {
           buf = prio_list[j];
           prio_list[j] = cur;
@@ -376,6 +377,8 @@ scheduler(void)
       switchuvm(p);
       p->state = RUNNING;
       p->times_scheduled++; // homework 4
+
+      cprintf("%d running, %d prio\n", p->pid, p->prio);
 
       swtch(&(c->scheduler), p->context);
       switchkvm();
