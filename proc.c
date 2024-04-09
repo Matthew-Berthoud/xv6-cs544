@@ -113,7 +113,7 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
   p->times_scheduled = 0; // homework 4
-  //p->prio = 0;            // homework 4
+  p->prio = 0;            // homework 4
 
   return p;
 }
@@ -325,6 +325,8 @@ wait(void)
 void
 scheduler(void)
 {
+  int max_prio;
+  struct proc *max_prio_proc;
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
@@ -333,29 +335,39 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    // Loop over process table looking for process to run.
+    // Get the max weighted process
     acquire(&ptable.lock);
+    max_prio = -1;
+    max_prio_proc = myproc();
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      p->times_scheduled++; // homework 4
-
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      c->proc = 0;
+      if(p->pid == myproc()->pid)
+        continue;
+      if(p->prio > max_prio) {
+        max_prio = p->prio;
+        max_prio_proc = p;
+      }
     }
-    release(&ptable.lock);
+    // Switch to chosen process.  It is the process's job
+    // to release ptable.lock and then reacquire it
+    // before jumping back to us.
 
+    p = max_prio_proc;
+
+    c->proc = p;
+    switchuvm(p);
+    p->state = RUNNING;
+    p->times_scheduled++; // homework 4
+
+    swtch(&(c->scheduler), p->context);
+    switchkvm();
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
+
+    release(&ptable.lock);
   }
 }
 
