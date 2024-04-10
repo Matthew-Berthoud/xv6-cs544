@@ -320,68 +320,34 @@ wait(void)
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
 // Scheduler never returns.  It loops, doing:
-//  - choose a process to run
+//  - choose a process to run (weighted round robin)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
 void
 scheduler(void)
 {
-  int i, j;
-  struct proc *prio_list[NPROC + 1]; // +1 for NULL if all procs runnable
+  int i;
   struct proc *p;
-  struct proc *cur;
-  struct proc *buf;
   struct cpu *c = mycpu();
   c->proc = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
-
-    // Start operations using ptable
     acquire(&ptable.lock);
 
-    // Empty out prio_list by filling with NULL
-    for (i = 0; i < NPROC+1; i++) {
-      prio_list[i] = NULL;
-    }
-
-    // Sort runnable processes by priority
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-    
-      cur = p;
-      for (i = 0; i < NPROC+1; i++) {
-        if (prio_list[i] != NULL && cur->prio <= prio_list[i]->prio)
-          continue;
-        j = i;
-        // Sorted insert into array
-        while (cur != NULL) {
-          buf = prio_list[j];
-          prio_list[j] = cur;
-          cur = buf;
-          j++;
-        }
-        break;
-      }
-    }
-    
-    for (i = 0; prio_list[i] != NULL; i++) {
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      p = prio_list[i];
       c->proc = p;
 
       // Schedule the same process `prio` times
-      for (j = -1; j < p->prio && p->state == RUNNABLE; j++) {
+      for (i = -1; i < p->prio && p->state == RUNNABLE; i++) {
         switchuvm(p);
         p->state = RUNNING;
         p->times_scheduled++; // homework 4
-
-        //cprintf("%d running, %d prio\n", p->pid, p->prio);
 
         swtch(&(c->scheduler), p->context);
         switchkvm();
@@ -647,7 +613,6 @@ setpriority(int n)
   acquire(&ptable.lock);
   p = myproc();
   p->prio = n;
-  //cprintf("SET: n: %d, p->prio: %d\n", n, p->prio);
   release(&ptable.lock);
   return 0;
 }
@@ -662,7 +627,6 @@ getpriority(void)
   acquire(&ptable.lock);
   p = myproc();
   n = p->prio;
-  //cprintf("GET: n: %d, p->prio: %d\n", n, p->prio);
   release(&ptable.lock);
   return n;
 }
